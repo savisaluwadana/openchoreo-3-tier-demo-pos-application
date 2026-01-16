@@ -1,4 +1,8 @@
 import { Pool } from 'pg';
+import dotenv from 'dotenv';
+
+// Load environment variables FIRST
+dotenv.config();
 
 // Create a connection pool
 // The Pool will automatically read from DATABASE_URL environment variable

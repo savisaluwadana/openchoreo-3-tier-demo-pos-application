@@ -36,43 +36,33 @@ A full-stack Inventory Management System built with **Next.js**, **Express.js**,
 ## Prerequisites
 
 - Node.js 18+ and npm/yarn
-- PostgreSQL 13+
+- Docker and Docker Compose
 
 ## Getting Started
 
-### 1. Database Setup
+### 1. Database Setup (Docker)
 
-First, create a PostgreSQL database:
-
-```bash
-# Login to PostgreSQL
-psql -U postgres
-
-# Create database
-CREATE DATABASE inventory_db;
-
-# Exit psql
-\q
-```
-
-Set your database URL as an environment variable:
+Start PostgreSQL in a Docker container:
 
 ```bash
-export DATABASE_URL="postgresql://username:password@localhost:5432/inventory_db"
+# Start PostgreSQL container
+docker-compose up -d
+
+# Check if the container is running
+docker ps
+
+# View logs
+docker-compose logs postgres
 ```
 
-Initialize the database schema:
+The database will automatically initialize with the schema from `init.sql`. The default connection details are:
+- **Host**: localhost
+- **Port**: 5432
+- **Database**: inventory_db
+- **User**: postgres
+- **Password**: postgres
 
-```bash
-psql $DATABASE_URL -f init.sql
-```
-
-Or from the backend directory:
-
-```bash
-cd backend
-npm run db:init
-```
+**Note**: The `.env` file is already created with the correct `DATABASE_URL`
 
 ### 2. Backend Setup
 
@@ -82,11 +72,8 @@ cd backend
 # Install dependencies
 npm install
 
-# Copy environment variables
-cp .env.example .env
-
-# Edit .env and set your DATABASE_URL
-# DATABASE_URL=postgresql://username:password@localhost:5432/inventory_db
+# The .env file is already created with the correct DATABASE_URL
+# If you need to modify it: DATABASE_URL=postgresql://postgres:postgres@localhost:5432/inventory_db
 
 # Run development server
 npm run dev
@@ -102,14 +89,36 @@ cd frontend
 # Install dependencies
 npm install
 
-# Copy environment variables
-cp .env.local.example .env.local
-
+# The .env.local file is already created
 # Run development server
 npm run dev
 ```
 
 The frontend will start on `http://localhost:3000`
+
+## Docker Commands
+
+### Managing the Database Container
+
+```bash
+# Start the database
+docker-compose up -d
+
+# Stop the database
+docker-compose down
+
+# Stop and remove all data (careful!)
+docker-compose down -v
+
+# View database logs
+docker-compose logs -f postgres
+
+# Access PostgreSQL CLI
+docker exec -it inventory_postgres psql -U postgres -d inventory_db
+
+# Restart the database
+docker-compose restart
+```
 
 ## API Endpoints
 
@@ -156,19 +165,24 @@ curl -X POST http://localhost:5000/api/products \
 ## Deployment Tips
 
 ### Environment Variables
+## Development Scripts
 
-For deployment, set the following environment variables:
+### Backend
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm start` - Run production server
 
-**Backend:**
-```
-DATABASE_URL=postgresql://user:password@host:port/database
-PORT=5000
-FRONTEND_URL=https://your-frontend-url.com
-```
+### Frontend
+- `npm run dev` - Start Next.js development server
+- `npm run build` - Build for production
+- `npm start` - Run production server
+- `npm run lint` - Run ESLint
 
-**Frontend:**
-```
-NEXT_PUBLIC_API_URL=https://your-backend-url.com/api
+### Database (Docker)
+- `docker-compose up -d` - Start PostgreSQL container
+- `docker-compose down` - Stop PostgreSQL container
+- `docker-compose logs postgres` - View database logs
+- `docker exec -it inventory_postgres psql -U postgres -d inventory_db` - Access database CLIour-backend-url.com/api
 ```
 
 ### Database Migration
