@@ -1,0 +1,44 @@
+apiVersion: openchoreo.dev/v1alpha1
+kind: Component
+metadata:
+  name: inventorydatabase
+  namespace: default
+spec:
+  owner:
+    projectName: inventory
+
+  componentType: deployment/service
+  autoDeploy: true
+
+  parameters:
+    replicas: 1
+    port: 5432
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+---
+
+apiVersion: openchoreo.dev/v1alpha1
+kind: Workload
+metadata:
+  name: inventorydatabase-workload
+  namespace: default
+spec:
+  owner:
+    componentName: inventorydatabase
+    projectName: inventory
+  containers:
+    main:
+      image: savisaluwadana/inventory-database:latest
+      env:
+        - key: POSTGRES_DB
+          value: inventory_db
+        - key: POSTGRES_USER
+          value: postgres
+        - key: POSTGRES_PASSWORD
+          value: postgres
