@@ -1,0 +1,33 @@
+apiVersion: core.choreo.dev/v1beta1
+kind: ComponentConfig
+spec:
+  # +required Name of the component.
+  componentName: inventory-backend
+  
+  # +optional Display name of the component.
+  componentDisplayName: Inventory Backend API
+  
+  # +optional Type of the component
+  componentType: Service
+  
+  # +optional Build configuration
+  buildType: Dockerfile
+  
+  # +required Relative path to the Dockerfile from the root of the repository
+  dockerFilePath: backend/Dockerfile
+  
+  # +required Context path for the Docker build
+  dockerContext: backend
+  
+  # +required Port details for the component
+  ports:
+    - name: http
+      port: 5000
+      
+  # +optional Environment configurations
+  env:
+    - name: PORT
+      value: "5000"
+    - name: NODE_ENV
+      value: production
+    # DATABASE_URL and FRONTEND_URL will be injected via connections

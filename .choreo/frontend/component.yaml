@@ -1,0 +1,31 @@
+apiVersion: core.choreo.dev/v1beta1
+kind: ComponentConfig
+spec:
+  # +required Name of the component.
+  componentName: inventory-frontend
+  
+  # +optional Display name of the component.
+  componentDisplayName: Inventory Frontend
+  
+  # +optional Type of the component
+  componentType: WebApplication
+  
+  # +optional Build configuration
+  buildType: Dockerfile
+  
+  # +required Relative path to the Dockerfile from the root of the repository
+  dockerFilePath: frontend/Dockerfile
+  
+  # +required Context path for the Docker build
+  dockerContext: frontend
+  
+  # +required Port details for the component
+  ports:
+    - name: http
+      port: 3000
+      
+  # +optional Environment configurations
+  env:
+    - name: NODE_ENV
+      value: production
+    # NEXT_PUBLIC_API_URL will be injected via connections

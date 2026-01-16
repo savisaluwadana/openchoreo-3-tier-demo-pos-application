@@ -1,0 +1,32 @@
+apiVersion: core.choreo.dev/v1beta1
+kind: ComponentConfig
+spec:
+  # +required Name of the component.
+  componentName: inventory-database
+  
+  # +optional Display name of the component.
+  componentDisplayName: Inventory Database
+  
+  # +optional Type of the component (Service, WebApp, ScheduledTask, etc.)
+  componentType: Service
+  
+  # +optional Build configuration
+  buildType: Dockerfile
+  
+  # +required Relative path to the Dockerfile from the root of the repository
+  dockerFilePath: database/Dockerfile
+  
+  # +required Context path for the Docker build
+  dockerContext: database
+  
+  # +required Port details for the component
+  ports:
+    - name: postgres
+      port: 5432
+      
+  # +optional Environment configurations
+  env:
+    - name: POSTGRES_DB
+      value: inventory_db
+    - name: POSTGRES_USER
+      value: postgres
