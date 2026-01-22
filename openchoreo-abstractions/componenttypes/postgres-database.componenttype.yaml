@@ -21,7 +21,7 @@ spec:
       dbUser: "string | default=postgres"
       dbPassword: "string | default=postgres"
 
-      storageClassName: "string | default=standard"
+      storageClassName: "string | default=local-path"
       storageSize: "string | default=5Gi"
 
       resources:

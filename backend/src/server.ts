@@ -17,6 +17,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Root endpoint (useful when gateway routes /<component> -> /)
+app.get('/', (req: Request, res: Response) => {
+  res.json({
+    status: 'ok',
+    endpoints: ['/health', '/api/products'],
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', message: 'Server is running' });

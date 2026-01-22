@@ -24,7 +24,7 @@ spec:
     dbUser: postgres
     dbPassword: postgres
 
-    storageClassName: standard
+    storageClassName: local-path
     storageSize: 5Gi
 
     resources:
