@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgresinstance-controller
+  namespace: inventory-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: postgresinstance-controller
+rules:
+  - apiGroups: ["openchoreo.dev"]
+    resources: ["postgresinstances", "postgresinstances/status"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: postgresinstance-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: postgresinstance-controller
+subjects:
+  - kind: ServiceAccount
+    name: postgresinstance-controller
+    namespace: inventory-system

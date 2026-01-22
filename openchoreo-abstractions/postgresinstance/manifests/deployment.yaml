@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresinstance-controller
+  namespace: inventory-system
+  labels:
+    app: postgresinstance-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresinstance-controller
+  template:
+    metadata:
+      labels:
+        app: postgresinstance-controller
+    spec:
+      serviceAccountName: postgresinstance-controller
+      containers:
+        - name: controller
+          image: savisaluwadana/postgresinstance-controller:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"

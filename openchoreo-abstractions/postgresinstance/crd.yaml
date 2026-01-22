@@ -1,0 +1,93 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: postgresinstances.openchoreo.dev
+spec:
+  group: openchoreo.dev
+  scope: Namespaced
+  names:
+    plural: postgresinstances
+    singular: postgresinstance
+    kind: PostgresInstance
+    shortNames:
+      - pginst
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      subresources:
+        status: {}
+      schema:
+        openAPIV3Schema:
+          type: object
+          required: [spec]
+          properties:
+            spec:
+              type: object
+              required:
+                - host
+                - database
+                - username
+                - passwordSecretRef
+              properties:
+                host:
+                  type: string
+                  description: DNS name/IP of the Postgres endpoint (e.g., postgres-service).
+                port:
+                  type: integer
+                  description: Postgres port.
+                  default: 5432
+                  minimum: 1
+                  maximum: 65535
+                database:
+                  type: string
+                  description: Database name.
+                username:
+                  type: string
+                  description: Database username.
+                passwordSecretRef:
+                  type: object
+                  description: Reference to a Secret containing the password.
+                  required: [name, key]
+                  properties:
+                    name:
+                      type: string
+                    key:
+                      type: string
+                sslMode:
+                  type: string
+                  description: Optional sslmode query param (disable|require|verify-ca|verify-full).
+                  enum: [disable, require, verify-ca, verify-full]
+                bindingSecretName:
+                  type: string
+                  description: Secret to create/update with DATABASE_URL and DB_* keys.
+                additionalParams:
+                  type: object
+                  description: Additional query parameters to append to DATABASE_URL.
+                  additionalProperties:
+                    type: string
+            status:
+              type: object
+              properties:
+                observedGeneration:
+                  type: integer
+                bindingSecretName:
+                  type: string
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    required: [type, status]
+                    properties:
+                      type:
+                        type: string
+                      status:
+                        type: string
+                        enum: ["True", "False", "Unknown"]
+                      reason:
+                        type: string
+                      message:
+                        type: string
+                      lastTransitionTime:
+                        type: string
+                        format: date-time

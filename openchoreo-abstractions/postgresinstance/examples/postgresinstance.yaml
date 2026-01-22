@@ -1,0 +1,30 @@
+# 1) Secret with DB password (existing Postgres instance)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: inventory-db-creds
+  namespace: inventory-system
+type: Opaque
+stringData:
+  password: postgres
+---
+# 2) PostgresInstance abstraction -> produces binding Secret with DATABASE_URL
+apiVersion: openchoreo.dev/v1alpha1
+kind: PostgresInstance
+metadata:
+  name: inventory-db
+  namespace: inventory-system
+spec:
+  host: postgres-service
+  port: 5432
+  database: inventory_db
+  username: postgres
+  passwordSecretRef:
+    name: inventory-db-creds
+    key: password
+
+  # Set this to 'backend-secret' to match `kubernetes/backend-deployment.yaml` as-is
+  bindingSecretName: backend-secret
+
+  # Optional
+  sslMode: disable
