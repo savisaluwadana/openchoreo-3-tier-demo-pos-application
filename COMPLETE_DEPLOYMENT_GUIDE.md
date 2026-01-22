@@ -478,7 +478,7 @@ spec:
       value: "http://inventoryfrontend-development.openchoreoapis.localhost:19080"
     
     - name: DATABASE_URL
-      value: "postgresql://postgres.vnqpwialdwdgqcvymhox:Sudusalu@123@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
+      value: "
   
   # Port configuration
   ports:
@@ -889,7 +889,7 @@ spec:
     - name: FRONTEND_URL
       value: "http://inventoryfrontend-development.openchoreoapis.localhost:19080"
     - name: DATABASE_URL
-      value: "postgresql://postgres.vnqpwialdwdgqcvymhox:Sudusalu@123@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
+      value: "
   
   ports:
     - name: http
