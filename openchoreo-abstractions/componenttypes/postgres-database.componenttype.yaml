@@ -1,0 +1,116 @@
+apiVersion: openchoreo.dev/v1alpha1
+kind: ComponentType
+metadata:
+  name: postgres-database
+  namespace: default
+spec:
+  # A database benefits from stable identity + volumeClaimTemplates
+  workloadType: statefulset
+
+  schema:
+    types:
+      Resources:
+        cpu: "string | default=250m"
+        memory: "string | default=256Mi"
+
+    parameters:
+      replicas: "integer | default=1"
+      port: "integer | default=5432"
+
+      dbName: "string | default=inventory_db"
+      dbUser: "string | default=postgres"
+      dbPassword: "string | default=postgres"
+
+      storageClassName: "string | default=standard"
+      storageSize: "string | default=5Gi"
+
+      resources:
+        requests: Resources
+        limits: Resources
+
+      minAvailable: "integer | default=0"
+
+  resources:
+    - id: service
+      template:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: ${metadata.name}
+          namespace: ${metadata.namespace}
+          labels: ${metadata.labels}
+        spec:
+          type: ClusterIP
+          selector: ${metadata.podSelectors}
+          ports:
+            - name: postgres
+              port: ${parameters.port}
+              targetPort: ${parameters.port}
+              protocol: TCP
+
+    - id: statefulset
+      template:
+        apiVersion: apps/v1
+        kind: StatefulSet
+        metadata:
+          name: ${metadata.name}
+          namespace: ${metadata.namespace}
+          labels: ${metadata.labels}
+        spec:
+          serviceName: ${metadata.name}
+          replicas: ${parameters.replicas}
+          selector:
+            matchLabels: ${metadata.podSelectors}
+          template:
+            metadata:
+              labels: ${metadata.podSelectors}
+            spec:
+              containers:
+                - name: main
+                  image: ${workload.containers["main"].image}
+                  ports:
+                    - name: postgres
+                      containerPort: ${parameters.port}
+                      protocol: TCP
+                  env:
+                    - name: POSTGRES_DB
+                      value: ${parameters.dbName}
+                    - name: POSTGRES_USER
+                      value: ${parameters.dbUser}
+                    - name: POSTGRES_PASSWORD
+                      value: ${parameters.dbPassword}
+                    - name: PGDATA
+                      value: /var/lib/postgresql/data/pgdata
+                  volumeMounts:
+                    - name: data
+                      mountPath: /var/lib/postgresql/data
+                  resources:
+                    requests:
+                      cpu: ${parameters.resources.requests.cpu}
+                      memory: ${parameters.resources.requests.memory}
+                    limits:
+                      cpu: ${parameters.resources.limits.cpu}
+                      memory: ${parameters.resources.limits.memory}
+          volumeClaimTemplates:
+            - metadata:
+                name: data
+                labels: ${metadata.labels}
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                storageClassName: ${parameters.storageClassName}
+                resources:
+                  requests:
+                    storage: ${parameters.storageSize}
+
+    - id: pdb
+      template:
+        apiVersion: policy/v1
+        kind: PodDisruptionBudget
+        metadata:
+          name: ${metadata.name}
+          namespace: ${metadata.namespace}
+          labels: ${metadata.labels}
+        spec:
+          minAvailable: ${parameters.minAvailable}
+          selector:
+            matchLabels: ${metadata.podSelectors}
